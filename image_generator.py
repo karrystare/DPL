@@ -13,7 +13,7 @@ def fetch_picture(name):
                 
         cap = cv2.VideoCapture(0)
         if cap is None or not cap.isOpened():
-               print('Warning: unable to open video source: ', source)
+               print('Warning: unable to open video source')
                return None
         while number_of_images < MAX_NUMBER_OF_IMAGES:
             ret, frame = cap.read()

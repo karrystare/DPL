@@ -85,7 +85,7 @@ def verify_face(database, slot):
     
     video_capture = cv2.VideoCapture(0)
     if video_capture is None or not video_capture.isOpened():
-       print('Warning: unable to open video source: ', source)
+       print('Warning: unable to open video source')
        return None
     while True:
       ret, frame = video_capture.read()
