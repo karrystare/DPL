@@ -1,2 +1,4 @@
 cv2==4.5.5
 tensorflow==2.8.0
+tk==8.6
+numpy==1.22.3
