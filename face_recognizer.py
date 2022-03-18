@@ -14,21 +14,18 @@ face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_defau
 threshold = 0.1
 logs_directory = "logs/"
 
-def create_logdir(slot):
-    if not os.path.exists(logs_directory):
-      os.makedirs(logs_directory, exist_ok = 'True')
-    logs = []
-    logs.append(datetime.today().strftime('%H:%M:%S') + ' ' + slot)
-    logs.append('\n')
-    return logs
-
-def write_logs(logs):
+def write_logs(line):
     date = datetime.today().strftime('%Y-%m-%d')
     logs_filename = logs_directory + date + '.txt'
     with open(logs_filename, 'a+') as f:
-        for line in logs:
-          f.write(line)
-          f.write('\n')
+        f.write(line)
+        f.write('\n')
+
+def create_logdir(slot):
+    if not os.path.exists(logs_directory):
+      os.makedirs(logs_directory, exist_ok = 'True')
+    write_logs(datetime.today().strftime('%H:%M:%S') + ' ' + slot)
+    write_logs('\n')
 
 def write_attendance(line):
     with open('attendance.txt', 'a+') as f:
@@ -80,15 +77,16 @@ def load_database(filename):
     return None
 
 def verify_face(database, slot):
-    logs = create_logdir(slot)
+    create_logdir(slot)
     latest_entry = ''
     attendance = set()
-    write_attendance(datetime.today().strftime('%H:%M:%S') + ' ' + slot)
+    write_attendance(datetime.today().strftime('%H:%M:%S') + ' ' + slot + '\n')
     
     video_capture = cv2.VideoCapture(0)
     if video_capture is None or not video_capture.isOpened():
        return None
-    while True:
+    
+    while True :
       ret, frame = video_capture.read()
       frame = cv2.flip(frame, 1)
 
@@ -110,20 +108,22 @@ def verify_face(database, slot):
         if min_dist < threshold and latest_entry != identity:
           latest_entry = identity
           attendance.add(identity)
-          logs.append(datetime.today().strftime('%H:%M:%S') + "   -   " + identity)
+          write_logs(datetime.today().strftime('%H:%M:%S') + "   -   " + identity)
           cv2.putText(frame, "Face : " + identity + " Verified", (x, y - 50), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
           cv2.putText(frame, "Dist : " + str(min_dist), (x, y - 20), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
         elif latest_entry == identity:
           cv2.putText(frame, "Face : " + identity + " Already Verified", (x, y - 50), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 0), 2)
         else:
           cv2.putText(frame, 'No matching faces', (x, y - 20), cv2.FONT_HERSHEY_PLAIN, 1.5, (0, 0, 255), 2)
-
+          
       cv2.imshow('Face Recognition System', frame)
       if(cv2.waitKey(1) & 0xFF == ord('q')):
         break
-
-    video_capture.release()
-    cv2.destroyAllWindows()
-    write_logs(logs)
+    
+    write_logs(' ')
+    write_logs('---End Shift---')
+    write_logs(' ')
     write_attendance(', '.join(attendance))
+    video_capture.release()
+    cv2.destroyAllWindows()  
     return attendance

@@ -102,9 +102,9 @@ def GButton_851_command():
             output("No Capture Device Found, ReCheck Settings")
             return None
     else:
-        output("Input a slot name")
+        output("Input a Shift Name")
         return None
-    output(', '.join(attendance))
+    output('Attended:\n' + ', '.join(attendance))
 
 def GButton_325_command():
     global database, message
