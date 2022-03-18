@@ -19,5 +19,7 @@ Align face as centered as possible in the webcam window, then Hold "P" to start 
 #### Step 2: Create a Database
 The module will read through all the images inside the folder "images" and convert them into vectors through the OpenFace model. It will create a dictionary with the names as keys and a list of vectors as value for each name. The user can choose to manipulate the processed data here if wished using the options such as "Add Entry", "Remove Entry", "Save Database" and "Load Database". Simply clear out the "List of Names" TextBox and replace with respective name, i.e Name of Entry to Add/Remove or Name of Database to Save/Load (The Module will automatically add ".npy" at the end).
 
+![image](https://github.com/karrystare/DPL/blob/cf33bcb9e75dbbaa20ba7551f2c46d6526b0694e/Capture.PNG)
+
 #### Step 3: Verification Module
 After Creating/Loading Database, enter a Shift Name in the middle TextBox to assign a shift to this run. Click "Run Verification" to open webcam and start the process. For any face appeared on the camera, the module will automatically detect and crop the ROI of the faces then try to verify it. Unregistered Faces will not pass as likely target since the module used the closest distance instead of a standard classification model. Each successful verification will add into a log file created in the "logs" folder with the time the person verified and their name. Each person can only verify once in each shift and the "attendance.txt" will save all the verified name in each shift. To Exit, Hold "Q" in the webcam window.
