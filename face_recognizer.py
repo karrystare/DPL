@@ -56,7 +56,9 @@ def fill_database():
 
 def add_database(database, new_name):
     if new_name not in os.listdir('images'):
-        gen.fetch_picture(new_name)
+        catch = gen.fetch_picture(new_name)
+    if catch == None:
+        return None
     if new_name not in database:
         for image in os.listdir(os.path.join('images',new_name)):
             database[new_name].append(img_path_to_encoding(os.path.join('images',new_name,image), FR_model))
@@ -75,7 +77,7 @@ def load_database(filename):
     if os.path.isfile(filename+'.npy'):
         database = np.load(filename+'.npy',allow_pickle='TRUE').item()
         return database
-    print('No file to load')
+    return None
 
 def verify_face(database, slot):
     logs = create_logdir(slot)
@@ -85,7 +87,6 @@ def verify_face(database, slot):
     
     video_capture = cv2.VideoCapture(0)
     if video_capture is None or not video_capture.isOpened():
-       print('Warning: unable to open video source')
        return None
     while True:
       ret, frame = video_capture.read()

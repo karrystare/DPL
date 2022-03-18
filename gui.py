@@ -5,98 +5,117 @@ import image_generator as generator
 
 database = {}
 
+def output(txt):
+    global message
+    print(txt)
+    message.set(txt)
+
 def GButton_859_command():
     INPUT = GLineEdit_578.get("1.0", "end-1c")
+    temp = ''
     if INPUT.find(',') != -1:
         names = INPUT.split(',')
         for name in names:
+            output("Fetch Images for: " + name)
             temp = generator.fetch_picture(name)
     elif INPUT != '':
+        output("Fetch Images for: " + INPUT)
         temp = generator.fetch_picture(INPUT)
+    else:
+        output("Input a Name")
+        return None
     if temp == None:
-        txt = "No Capture Device Found, ReCheck Settings"
-        print(txt)
-        message.set(txt)
+        output("No Capture Device Found, ReCheck Settings")
 
 def GButton_999_command():
     global database, message
     database = recognizer.fill_database()
-    txt = "Database Created Successfully"
-    message.set(txt)
-    print(txt)
+    if not database:
+        output("No Data Loaded")
+        return None
+    output("Database Created Successfully")
 
 def GButton_112_command():
     global database, message
     if not database:
-        print("Database is Empty")
+        output("Database is Empty")
         return None
     INPUT = GLineEdit_578.get("1.0", "end-1c")
     if INPUT != '':
         recognizer.save_database(database, INPUT)
     else:
         recognizer.save_database(database, "database")
-    txt = "Database Saved Successfully"
-    message.set(txt)
-    print(txt)        
+    output("Database Saved Successfully")     
 
 def GButton_217_command():
     global database, message
+    database_temp = {}
     INPUT = GLineEdit_578.get("1.0", "end-1c")
     if INPUT != '':
-        database = recognizer.load_database(INPUT)
+        database_temp = recognizer.load_database(INPUT)
     else:
-        database = recognizer.load_database("database")
-    print("Database Loaded Successfully")
+        database_temp = recognizer.load_database("database")
+    if database_temp == None:
+        output("No File To Load")
+        return None
+    database = database_temp
+    output("Database Loaded Successfully")
 
 def GButton_214_command():
     global database, message
+    database_temp = {}
     INPUT = GLineEdit_578.get("1.0", "end-1c")
     if INPUT != '':
-        database = recognizer.add_database(database, INPUT)
+        database_temp = recognizer.add_database(database, INPUT)
     else:
         print("Input a Name")
         return None
-    txt = "Entry " + INPUT + " Added Successfully"
-    message.set(txt)
-    print(txt)     
+    if database_temp == None:
+        output("Can't Access Camera")
+        return None
+    database = database_temp
+    output("Entry " + INPUT + " Added Successfully")  
 
 def GButton_454_command():
     global database, message
     if not database:
-        print("Database is Empty")
+        output("Database is Empty")
         return None
     INPUT = GLineEdit_578.get("1.0", "end-1c")
     if INPUT != '':
         database = recognizer.remove_database(database, INPUT)
     else:
-        print("Input a Name")
+        output("Input a Name")
         return None
-    txt = "Entry " + INPUT + " Removed Successfully"
-    message.set(txt)
-    print(txt) 
+    output("Entry " + INPUT + " Removed Successfully")
     
 def GButton_851_command():
     global database, message
     attendance = set()
     if not database:
-        print("Database is Empty")
+        output("Database is Empty")
         return None
     slot = GLineEdit_655.get("1.0", "end-1c")
     if slot != '':
         attendance = recognizer.verify_face(database, slot)
         if attendance == None:
-            txt = "No Capture Device Found, ReCheck Settings"
-            print(txt)
-            message.set(txt)
+            output("No Capture Device Found, ReCheck Settings")
             return None
     else:
-        print("Input a slot name")
+        output("Input a slot name")
         return None
-    message.set(', '.join(attendance))
+    output(', '.join(attendance))
 
 def GButton_325_command():
-    root.destroy()
+    global database, message
+    if not database:
+        output("Database is Empty")
+        return None
+    output(', '.join([*database]))
 
+def GButton_750_command():
+    root.destroy()
+    
 root = tk.Tk()
 message = tk.StringVar()
 message.set('')
@@ -187,7 +206,7 @@ ft = tkFont.Font(family='Times',size=10)
 GButton_325["font"] = ft
 GButton_325["fg"] = "#000000"
 GButton_325["justify"] = "center"
-GButton_325["text"] = "Exit"
+GButton_325["text"] = "Show Saved Names"
 GButton_325.place(x=10,y=360,width=125,height=40)
 GButton_325["command"] = GButton_325_command
 
@@ -212,7 +231,7 @@ ft = tkFont.Font(family='Times',size=10)
 GLabel_142["font"] = ft
 GLabel_142["fg"] = "#333333"
 GLabel_142["justify"] = "center"
-GLabel_142["text"] = "Attended "
+GLabel_142["text"] = "Output"
 GLabel_142.place(x=290,y=330,width=180,height=30)
 
 GLineEdit_655=tk.Text(root)
@@ -232,9 +251,19 @@ GLineEdit_578.place(x=190,y=50,width=400,height=170)
 GMessage_754=tk.Message(root)
 ft = tkFont.Font(family='Times',size=10)
 GMessage_754["font"] = ft
-GMessage_754["fg"] = "#333333"
+GMessage_754["fg"] = "#0006FD"
 GMessage_754["justify"] = "center"
 GMessage_754["textvariable"] = message
 GMessage_754.place(x=190,y=360,width=400,height=125)
+
+GButton_750=tk.Button(root)
+GButton_750["bg"] = "#e9e9ed"
+ft = tkFont.Font(family='Times',size=10)
+GButton_750["font"] = ft
+GButton_750["fg"] = "#000000"
+GButton_750["justify"] = "center"
+GButton_750["text"] = "Exit"
+GButton_750.place(x=10,y=410,width=125,height=40)
+GButton_750["command"] = GButton_750_command
 
 root.mainloop()
